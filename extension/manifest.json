@@ -1,0 +1,23 @@
+{
+   "browser_action": {
+      "default_icon": "icon.png",
+      "default_title": "ImmoWeb Maps",
+      "default_popup": "popup.html"
+   },
+   "content_scripts": [{
+       "matches": ["http://www.immoweb.be/*"],
+       "js": ["immoweb-injected.js"],
+       "run_at": "document_end"
+   }],
+   "background": {
+       "scripts": ["immoweb-background.js"]
+   },
+   "description": "See ImmoWeb search results in a google map",
+   "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCsLBLxKzq4mUTxFDKVP0uM9rrhLQ0f8nOW9Ft7f72KYZFRgCwRml+eHbWhcQO5LL/shxhFpvvSbR3x7Dt7QT1w1CPjcAqL3NnHRDgTfhf3m7izxs4x6rywDxcVgBwod4OeBMkzDW4SjST9MiqRK4fu2lPkLldtHuiOWRGOBvISTQIDAQAC",
+   "manifest_version": 2,
+   "name": "ImmoWeb Maps",
+   "permissions": [ "tabs", "*://*/*", "storage" ],
+   "update_url": "https://clients2.google.com/service/update2/crx",
+   "version": "0.0.1",
+   "content_security_policy": "script-src 'self' https://*.googleapis.com https://*.gstatic.com 'unsafe-eval'; object-src 'self'"
+}
