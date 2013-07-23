@@ -6,11 +6,34 @@ var bounds = null;
 var map = null;
 
 
+function generateStateSelectBox(id, currstate) { /* {{{ */
+    var states = {
+	none: "Unknown",
+	interested: "Interested",
+	notinterested: "Not interested",
+    };
+    var html = "";
+
+    if(!(currstate in states)) {
+        currstate = "none";
+    }
+
+    html += "<select id=\"state_"+id+"\">";
+    for(k in states) {
+	var seltext = "";
+	if(k == currstate) { seltext = " selected"; }
+	html += "<option value=\""+k+"\""+seltext+">"+states[k]+"</option>";
+    }
+
+    html += "</select>";
+
+    return html;
+}
+/* }}} */
+
 function generateInfoWindowOptions(id) { /* {{{ */
     var data = markerData[id];
     var html = "";
-
-    var selected = "selected" in data ? data.selected : false;
 
     html += "<table>";
 
@@ -30,8 +53,8 @@ function generateInfoWindowOptions(id) { /* {{{ */
     html += "</tr>";
 
     html += "<tr>";
-    html += "<td>Selected:</td>";
-    html += "<td><input id=\"selected_"+id+"\" type=\"checkbox\"" + (selected? " checked>" : ">") + "</td>";
+    html += "<td>State:</td>";
+    html += "<td>"+generateStateSelectBox(id, data.state)+"</td>";
     html += "</tr>";
 
     html += "<tr>";
@@ -56,8 +79,12 @@ function updateMarkerOptions(id) { /* {{{ */
 	position: new google.maps.LatLng(data['position']['latitude'], data['position']['longtitude']),
 	map: map,
     };
-    if(data.selected) options.icon = "green.png";
-    else options.icon = "red.png";
+
+    switch(data.state) {
+        case "interested": options.icon = "green.png"; break;
+        case "notinterested": options.icon = "grey.png"; break;
+        default: options.icon = "red.png"; break;
+    }
 
     marker.setOptions(options);
 }
@@ -65,10 +92,12 @@ function updateMarkerOptions(id) { /* {{{ */
 function addInfoWindowEventHandlers(id) { /* {{{ */
     var infowindow = infowindows[id];
     google.maps.event.addListener(infowindow, 'domready', function() {
-	$("#selected_"+id).click( function() {
-	    var elid = "selected_"+id;
-	    var checked = document.getElementById(elid).checked;
-	    updateLocalCache(id, {selected: checked});
+	$("#state_"+id).change( function() {
+	    var elid = "state_"+id;
+	    var stateel = document.getElementById(elid);
+	    var stateid = stateel.selectedIndex;
+	    console.log("Selected: "+stateid);
+	    updateLocalCache(id, {state: stateel.options[stateid].value});
 	    renderMarker(id);
 	});
 	$("#url_"+id).click( function() {
